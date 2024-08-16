@@ -1,82 +1,92 @@
-# Feed Summarization and RAG Pipeline
+# Project Name: AI based News Retriever
 
-This repository contains a Jupyter Notebook designed for retrieving, summarizing, and querying news articles from various RSS feeds. The pipeline leverages several state-of-the-art NLP models and libraries to perform these tasks efficiently. The focus is on creating structured documents from RSS feeds, summarizing their content using transformer models, and providing an interactive querying mechanism using a retrieval-based system.
+## Overview
 
-## Table of Contents
-1. [Installation](#installation)
-2. [Usage](#usage)
-3. [Pipeline Overview](#pipeline-overview)
-4. [Models and Libraries](#models-and-libraries)
-5. [Customization](#customization)
-6. [Contributing](#contributing)
-7. [License](#license)
+This project is designed to fetch RSS feeds from various sources, extract the main content, summarize it using OpenAI's GPT models, and store the summarized content in a structured format. The system also includes a retrieval mechanism using FAISS, enabling users to search for specific information across the summarized content. Additionally, Jina AI is used for scraping content from specific sources, enhancing the overall efficiency and scalability of the system.
 
-## Installation
+## Features
 
-To set up the environment and install the necessary dependencies, execute the following commands in your terminal or directly in the notebook:
+- **RSS Feed Fetching:** The system fetches RSS feeds from multiple sources, extracts relevant data, and stores it for further processing.
+- **Content Summarization:** Uses OpenAI's GPT models to summarize the fetched articles, ensuring that only the core content is preserved.
+- **Data Storage:** Summarized content is stored in a CSV file, making it easy to manage and update.
+- **Vector Store with FAISS:** The summarized content is embedded and stored using FAISS, allowing for efficient similarity-based searches.
+- **Custom Retrieval-Augmented Generation (RAG):** A custom RAG pipeline is implemented to answer user queries based on the stored summaries.
+- **Jina AI Scraping:** Integrated Jina AI for scraping, providing an efficient and scalable method to retrieve content from specific sources.
+
+## Techniques Used
+
+1. **BeautifulSoup:** For parsing and extracting data from RSS feeds.
+2. **Jina AI:** For scraping content from specific sources, improving scraping efficiency and handling large-scale data.
+3. **OpenAI GPT Models:** For text summarization and question-answering tasks.
+4. **FAISS (Facebook AI Similarity Search):** For creating a vector store that enables fast and accurate retrieval of relevant documents.
+5. **Recursive Character TextSplitter:** For splitting long documents into smaller, manageable chunks.
+6. **LangChain:** For building the RAG pipeline, allowing the integration of retrieval and generation processes.
+
+## Setup and Installation
+
+### Prerequisites
+
+- Python 3.8 or higher
+- Install required packages using `pip`:
+  ```bash
+  pip install requests beautifulsoup4 langchain pandas faiss-cpu jina
+
+## API Keys
+
+This project requires API key for OpenAI.
+
+## Running the Project
+
+### Fetch and Summarize RSS Feeds:
+
+- The script fetches RSS feeds from various sources and stores them in a CSV file.
+- Summarization is performed on the fetched articles, and the results are stored in `structured_documents.csv`.
+
+### Scraping with Jina AI:
+
+- Jina AI is used for scraping content from specific sources, ensuring efficient and scalable content retrieval.
+
+### Search and Retrieval:
+
+- After summarizing, the content is split and embedded using FAISS.
+- You can then query the system to retrieve specific information.
+
+## Example Queries
+
+### Retrieve all transfer news on Liverpool FC:
 
 ```python
-!pip install accelerate transformers tokenizers
-!pip install bitsandbytes einops
-!pip install xformers
-!pip install langchain
-!pip install faiss-gpu
-!pip install sentence_transformers
-!pip install --upgrade torch
-!pip install langchain-community langchain-core
+answer = rag_chain.invoke("Provide me all of the transfer news on Liverpool FC in bullets")
+print(answer)
 ```
 
-## Usage
+# Retrieve the Latest News in Pakistan
 
-- **Loading Models and Tokenizers**: The notebook loads a pre-trained transformer model (`Nexusflow/Starling-LM-7B-beta`) for text generation and a tokenizer associated with it.
+```python
+# Example Python code using a custom RAG pipeline to retrieve the latest news
+answer = rag_chain.invoke("latest pakistani news, in bullets")
+print(answer)
+```
 
-- **Setting Up RSS Feeds**: Various RSS feeds are defined and configured to fetch news articles related to sports, technology, and more.
+## Summary of the Process
 
-- **Fetching and Summarizing Articles**: The pipeline fetches articles from the RSS feeds, processes the content using BeautifulSoup, and summarizes the articles using transformer models.
+- **RSS Feed Fetching**: The system iterates through a list of RSS feed URLs, extracting titles, links, publication dates, and categories.
 
-- **Saving Summaries**: Summarized content is saved into a CSV file to maintain a record of processed articles.
+- **Content Summarization**: Each article's content is fetched and summarized using OpenAI's GPT model.
 
-- **Querying and Retrieval**: The notebook uses LangChain to allow users to query the summarized content. A vector store (using FAISS) is created for efficient retrieval of relevant articles based on user queries.
+- **Scraping with Jina AI**: Jina AI is utilized for efficiently scraping content from specific sources.
 
-- **Interactive Querying**: The Conversational Retrieval Chain is set up to allow for interactive querying, providing users with the latest news based on their queries.
+- **Storage and Retrieval**: The summarized content is stored in a CSV file, embedded using FAISS, and made available for similarity-based retrieval.
 
-## Pipeline Overview
-
-1. **Loading Models and Libraries**  
-   The notebook begins by loading necessary models and libraries, including `transformers`, `torch`, and `langchain`.
-
-2. **Fetching RSS Feeds**  
-   A list of RSS feeds is defined, and the `fetch_feed()` function is used to retrieve articles from these feeds. The content is then structured and prepared for summarization.
-
-3. **Summarization**  
-   Articles fetched from the RSS feeds are summarized using the BART model. The `summarize_text()` function handles the summarization process, providing concise summaries of the articles.
-
-4. **Storing Summaries**  
-   Summarized content is saved into a CSV file using the `save_to_csv()` function. This allows for the reuse and querying of summarized content later.
-
-5. **Querying the Data**  
-   The `ConversationalRetrievalChain` from LangChain is used to allow users to query the stored summaries. The pipeline uses FAISS for vector-based retrieval, making the querying process efficient and effective.
-
-## Models and Libraries
-
-- **Transformers**: Used for text generation and summarization tasks.
-- **LangChain**: Powers the conversational querying mechanism.
-- **FAISS**: Used to create a vector store for efficient document retrieval.
-- **BeautifulSoup**: Used for parsing HTML and XML content from the RSS feeds.
-
-## Customization
-
-You can customize the pipeline by:
-
-1. **Adding or Removing RSS Feeds**: Modify the `rss_feeds` list and corresponding details in `rss_feed_details` to change the sources of the articles.
-2. **Changing Summarization Models**: Replace the BART model with any other transformer-based summarization model by modifying the `summarize_text()` function.
-3. **Altering Query Parameters**: Adjust the querying behavior by modifying parameters like `temperature`, `max_new_tokens`, and `repetition_penalty` in the text generation pipeline.
+- **RAG Pipeline**: The custom RAG pipeline processes user queries, retrieves relevant documents, and generates concise answers.
 
 ## Contributing
 
-Contributions are welcome! Feel free to submit a pull request or open an issue for any improvements or suggestions.
+Feel free to open issues or submit pull requests if you have suggestions or improvements.
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+
 
